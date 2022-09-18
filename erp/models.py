@@ -81,6 +81,10 @@ class Client(models.Model):
     pass
 
 
+class Supplier(models.Model):
+    pass
+
+
 class Purchase(models.Model):
     pass
 
