@@ -51,16 +51,42 @@ class Window(models.Model):
     rc2 = models.BooleanField('Fittings with increased resistance to burglary (RC2)')
 
 
+class Supplier(models.Model):
+    name = models.CharField(max_length=250)
+    address_zip_code = models.CharField('ZIP code', max_length=6)
+    address_city = models.CharField('City', max_length=250)
+    address_street = models.CharField('Street and number', max_length=250)
+    description = models.CharField(max_length=250)
+
+
 class Material(models.Model):
-    pass
+    code = models.CharField(max_length=4, unique=True)
+    description = models.CharField(max_length=250)
+    unit = models.CharField(max_length=5)
+    cost = models.DecimalField(max_digits=5, decimal_places=2)
+    markup = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        help_text='the percentage that is added to the costs to get the selling price and create a profit'
+    )
+    weight_by_unit = models.DecimalField(max_digits=5, decimal_places=2)
+    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
 
 
 class BillOfMaterials(models.Model):
     pass
 
 
+class Employee(models.Model):
+    first_name = models.CharField(max_length=250)
+    surname = models.CharField(max_length=250)
+
+
 class Offer(models.Model):
-    pass
+    number = models.CharField(max_length=20)
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    date = models.DateTimeField()
+    # window = models.ManyToOneRel
 
 
 class Order(models.Model):
@@ -75,15 +101,7 @@ class Client(models.Model):
     pass
 
 
-class Supplier(models.Model):
-    pass
-
-
 class Purchase(models.Model):
-    pass
-
-
-class Employee(models.Model):
     pass
 
 
