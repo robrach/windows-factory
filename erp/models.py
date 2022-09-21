@@ -46,15 +46,9 @@ class Window(models.Model):
         ],
         default='standard_thermics',
     )
-    additional_options = models.CharField(
-        max_length=20,
-        choices=[
-            ('additional_vent', 'additional vent'),
-            ('security_lock', 'security lock in the handle'),
-            ('rc2', 'fittings with increased resistance to burglary (RC2)')
-        ],
-        default='additional_vent',
-    )
+    additional_vent = models.BooleanField('Additional vent')
+    security_lock = models.BooleanField('Security lock in the handle')
+    rc2 = models.BooleanField('Fittings with increased resistance to burglary (RC2)')
 
 
 class Material(models.Model):
@@ -90,4 +84,8 @@ class Purchase(models.Model):
 
 
 class Employee(models.Model):
+    pass
+
+
+class Api(models.Model):
     pass
