@@ -2,6 +2,21 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 
+class Employee(models.Model):
+    first_name = models.CharField(max_length=100)
+    surname = models.CharField(max_length=100)
+    department = models.CharField(max_length=100)
+    position = models.CharField(max_length=100)
+
+
+class Client(models.Model):
+    name = models.CharField(max_length=250)
+    tax_id = models.CharField(max_length=10)
+    zip_code = models.CharField('ZIP code', max_length=6)
+    city = models.CharField('City', max_length=250)
+    street = models.CharField('Street and number', max_length=250)
+
+
 class Window(models.Model):
     width = models.IntegerField(
         validators=[MinValueValidator(500), MaxValueValidator(2500)],
@@ -51,19 +66,39 @@ class Window(models.Model):
     rc2 = models.BooleanField('Fittings with increased resistance to burglary (RC2)')
 
 
+class Offer(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
+    offer_date = models.DateTimeField()
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    windows = models.ManyToManyField(Window)
+    accepted = models.BooleanField('Accepted by client?')
+
+
+class Bom(models.Model):
+    """ 'Bom' means Bill of materials """
+    window = models.ForeignKey(Window, on_delete=models.CASCADE)
+    cost_of_materials = models.DecimalField(max_digits=10, decimal_places=2)
+    cost_of_work = models.DecimalField(max_digits=10, decimal_places=2)
+
+
+class CategoryOfMaterial(models.Model):
+    category = models.CharField(max_length=100)
+
+
 class Supplier(models.Model):
     name = models.CharField(max_length=250)
-    address_zip_code = models.CharField('ZIP code', max_length=6)
-    address_city = models.CharField('City', max_length=250)
-    address_street = models.CharField('Street and number', max_length=250)
-    description = models.CharField(max_length=250)
+    zip_code = models.CharField('ZIP code', max_length=6)
+    city = models.CharField('City', max_length=250)
+    street = models.CharField('Street and number', max_length=250)
+    category = models.ForeignKey(CategoryOfMaterial, on_delete=models.CASCADE)
 
 
 class Material(models.Model):
     code = models.CharField(max_length=4, unique=True)
     description = models.CharField(max_length=250)
     unit = models.CharField(max_length=5)
-    cost = models.DecimalField(max_digits=5, decimal_places=2)
+    quantity = models.IntegerField
+    cost_per_unit = models.DecimalField(max_digits=5, decimal_places=2)
     markup = models.DecimalField(
         max_digits=5,
         decimal_places=2,
@@ -71,39 +106,29 @@ class Material(models.Model):
     )
     weight_by_unit = models.DecimalField(max_digits=5, decimal_places=2)
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
-
-
-class BillOfMaterials(models.Model):
-    pass
-
-
-class Employee(models.Model):
-    first_name = models.CharField(max_length=250)
-    surname = models.CharField(max_length=250)
-
-
-class Offer(models.Model):
-    number = models.CharField(max_length=20)
-    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    date = models.DateTimeField()
-    # window = models.ManyToOneRel
+    category = models.ForeignKey(CategoryOfMaterial, on_delete=models.CASCADE)
 
 
 class Order(models.Model):
-    pass
-
-
-class Warehouse(models.Model):
-    pass
-
-
-class Client(models.Model):
-    pass
+    offer = models.ForeignKey(Offer, on_delete=models.CASCADE)
+    status = models.CharField(
+        max_length=20,
+        choices=[
+            ('to_do', 'To do'),
+            ('in_progress', 'Production in progress'),
+            ('done', 'Produced and ready for delivery'),
+            ('delivered', 'Delivered to client')
+        ],
+        default='to_do',
+    )
 
 
 class Purchase(models.Model):
-    pass
+    material = models.ForeignKey(Material, on_delete=models.CASCADE)
+    quantity = models.IntegerField
+    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
 
 
 class Api(models.Model):
-    pass
+    endpoint = models.CharField(max_length=250)
+    description = models.CharField(max_length=250)
