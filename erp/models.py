@@ -19,10 +19,12 @@ class Client(models.Model):
 
 class Window(models.Model):
     width = models.IntegerField(
+        'Width [mm]',
         validators=[MinValueValidator(500), MaxValueValidator(2500)],
         default=500,
     )
     height = models.IntegerField(
+        'Height [mm]',
         validators=[MinValueValidator(500), MaxValueValidator(2500)],
         default=500,
     )
@@ -77,8 +79,16 @@ class Offer(models.Model):
 class Bom(models.Model):
     """ 'Bom' means Bill of materials """
     window = models.ForeignKey(Window, on_delete=models.CASCADE)
-    cost_of_materials = models.DecimalField(max_digits=10, decimal_places=2)
-    cost_of_work = models.DecimalField(max_digits=10, decimal_places=2)
+    cost_of_materials = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        validators=[MinValueValidator(0)],
+    )
+    cost_of_work = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        validators=[MinValueValidator(0)],
+    )
 
 
 class CategoryOfMaterial(models.Model):
@@ -98,13 +108,18 @@ class Material(models.Model):
     description = models.CharField(max_length=250)
     unit = models.CharField(max_length=5)
     quantity = models.IntegerField
-    cost_per_unit = models.DecimalField(max_digits=5, decimal_places=2)
-    markup = models.DecimalField(
-        max_digits=5,
+    cost_per_unit = models.DecimalField(
+        max_digits=8,
         decimal_places=2,
+        validators=[MinValueValidator(0)],
+    )
+    trade_markup = models.DecimalField(
+        max_digits=8,
+        decimal_places=2,
+        validators=[MinValueValidator(0)],
         help_text='the percentage that is added to the costs to get the selling price and create a profit'
     )
-    weight_by_unit = models.DecimalField(max_digits=5, decimal_places=2)
+    weight_by_unit = models.DecimalField(max_digits=8, decimal_places=2)
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
     category = models.ForeignKey(CategoryOfMaterial, on_delete=models.CASCADE)
 
@@ -125,7 +140,10 @@ class Order(models.Model):
 
 class Purchase(models.Model):
     material = models.ForeignKey(Material, on_delete=models.CASCADE)
-    quantity = models.IntegerField
+    quantity = models.IntegerField(
+        default=1,
+        validators=[MinValueValidator(0)],
+    )
     supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
 
 
