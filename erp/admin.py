@@ -51,11 +51,17 @@ class WindowAdmin(admin.ModelAdmin):
         'additional_vent',
         'security_lock',
         'rc2',
+        'quantity',
     )
     list_display_links = (
         'id',
         '__str__',
     )
+
+
+class WindowInline(admin.TabularInline):
+    model = Window
+    extra = 0
 
 
 @admin.register(Offer)
@@ -75,6 +81,7 @@ class OfferAdmin(admin.ModelAdmin):
         'accepted',
         'employee',
     )
+    inlines = [WindowInline]
 
 
 @admin.register(Bom)
