@@ -138,7 +138,7 @@ class OrderAdmin(admin.ModelAdmin):
 @admin.register(Purchase)
 class PurchaseAdmin(admin.ModelAdmin):
     list_display = (
-        'id',
+        '__str__',
         'supplier',
         'material',
         'quantity',

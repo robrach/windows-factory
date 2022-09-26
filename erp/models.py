@@ -184,6 +184,9 @@ class Purchase(models.Model):
     )
     supplier = models.ForeignKey(Supplier, on_delete=models.PROTECT)
 
+    def __str__(self):
+        return f'PU-{self.pk}'
+
     def unit(self):
         return self.material.unit
 
