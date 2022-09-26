@@ -115,6 +115,7 @@ class MaterialAdmin(admin.ModelAdmin):
         'unit',
         'quantity',
         'cost_per_unit',
+        'total_cost',
     )
     list_filter = (
         'category',
@@ -123,14 +124,37 @@ class MaterialAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    pass
+    list_display = (
+        'id',
+        '__str__',
+        'offer',
+        'status',
+    )
+    list_filter = (
+        'status',
+    )
 
 
 @admin.register(Purchase)
 class PurchaseAdmin(admin.ModelAdmin):
-    pass
+    list_display = (
+        'id',
+        'supplier',
+        'material',
+        'quantity',
+        'unit',
+        'cost_per_unit',
+        'total_cost',
+    )
+    search_fields = (
+        'supplier',
+    )
 
 
 @admin.register(Api)
 class ApiAdmin(admin.ModelAdmin):
-    pass
+    list_display = (
+        'id',
+        '__str__',
+        'description',
+    )

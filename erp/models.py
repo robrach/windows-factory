@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib import admin
+from django.utils.html import format_html
 
 
 class Employee(models.Model):
@@ -135,7 +136,7 @@ class Material(models.Model):
     code = models.CharField(max_length=4, unique=True)
     description = models.CharField(max_length=250)
     unit = models.CharField(max_length=5)
-    quantity = models.IntegerField(max_length=5)
+    quantity = models.IntegerField()
     cost_per_unit = models.DecimalField(
         max_digits=8,
         decimal_places=2,
@@ -154,6 +155,9 @@ class Material(models.Model):
     def __str__(self):
         return f'{self.code}-{self.description}'
 
+    def total_cost(self):
+        return self.quantity * self.cost_per_unit
+
 
 class Order(models.Model):
     offer = models.ForeignKey(Offer, on_delete=models.PROTECT)
@@ -168,6 +172,9 @@ class Order(models.Model):
         default='to_do',
     )
 
+    def __str__(self):
+        return f'OR-{self.pk}'
+
 
 class Purchase(models.Model):
     material = models.ForeignKey(Material, on_delete=models.PROTECT)
@@ -177,7 +184,19 @@ class Purchase(models.Model):
     )
     supplier = models.ForeignKey(Supplier, on_delete=models.PROTECT)
 
+    def unit(self):
+        return self.material.unit
+
+    def cost_per_unit(self):
+        return self.material.cost_per_unit
+
+    def total_cost(self):
+        return self.material.cost_per_unit * self.quantity
+
 
 class Api(models.Model):
     endpoint = models.CharField(max_length=250)
     description = models.CharField(max_length=250)
+
+    def __str__(self):
+        return format_html(f"<a href='{self.endpoint}'>{self.endpoint}</a>")
