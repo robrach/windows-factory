@@ -31,7 +31,18 @@ class Client(models.Model):
         return self.name
 
 
+class Offer(models.Model):
+    employee = models.ForeignKey(Employee, on_delete=models.PROTECT)
+    offer_date = models.DateTimeField()
+    client = models.ForeignKey(Client, on_delete=models.PROTECT)
+    accepted = models.BooleanField('Accepted by client?')
+
+    def __str__(self):
+        return f'OF-{self.pk}'
+
+
 class Window(models.Model):
+    offer = models.ForeignKey(Offer, on_delete=models.PROTECT)
     width = models.IntegerField(
         'Width [mm]',
         validators=[MinValueValidator(500), MaxValueValidator(2500)],
@@ -80,20 +91,10 @@ class Window(models.Model):
     additional_vent = models.BooleanField()
     security_lock = models.BooleanField(help_text='Security lock in the handle')
     rc2 = models.BooleanField('RC2', help_text='Fittings with increased resistance to burglary (class RC2)')
+    quantity = models.IntegerField()
 
     def __str__(self):
         return f'{self.width}x{self.height}'
-
-
-class Offer(models.Model):
-    employee = models.ForeignKey(Employee, on_delete=models.PROTECT)
-    offer_date = models.DateTimeField()
-    client = models.ForeignKey(Client, on_delete=models.PROTECT)
-    windows = models.ManyToManyField(Window)
-    accepted = models.BooleanField('Accepted by client?')
-
-    def __str__(self):
-        return f'OF-{self.pk}'
 
 
 class Bom(models.Model):
